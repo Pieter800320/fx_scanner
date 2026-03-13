@@ -32,8 +32,8 @@ CACHE_TTL_MINUTES = {
 # Twelvedata free tier: 800 credits/day, 8 per minute
 # Each symbol in a batch call costs 1 credit
 # Batch up to 120 symbols per call (API limit)
-MAX_SYMBOLS_PER_BATCH = 55  # conservative — stays well within limits
-RATE_LIMIT_DELAY      = 0.5  # seconds between batch calls
+MAX_SYMBOLS_PER_BATCH = 8    # Twelvedata free tier: 8 credits per minute
+RATE_LIMIT_DELAY      = 61   # seconds between batches — wait for next minute window
 
 # ── API KEY ───────────────────────────────────────────────────────────────────
 
