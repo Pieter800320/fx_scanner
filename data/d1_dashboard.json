@@ -1,20 +1,19 @@
 {
-  "updated": "2026-03-13T08:05:00Z",
+  "updated": "2026-03-13T22:05:00Z",
   "timeframe": "D1",
   "msl": { "value": 52.3, "tide": "longFuel", "slope": 2.1 },
-  "pairs": [{
-    "symbol": "EURUSD", 
-    "psl": 18.4, 
-    "pslRank": 4, 
-    "buyRankDot": false, 
-    "sellRankDot": true,
-    "tideAligned": true, 
-    "isSloped200": true, 
-    "slope200": -0.14, 
-    "touch200": true,
-    "touch50": false, 
-    "candleConf": true, 
-    "signal": "SELL", 
-    "grade": "A"
-  }]
+  "pairs": [
+    {"symbol": "EURUSD", "psl": 18.4, "pslRank": 4, "buyRankDot": false, "sellRankDot": true, "tideAligned": true, "isSloped200": true, "slope200": -0.14, "touch200": true, "touch50": false, "candleConf": true, "signal": "SELL", "grade": "A"},
+    {"symbol": "GBPUSD", "psl": 65.2, "pslRank": 20, "buyRankDot": false, "sellRankDot": true, "tideAligned": true, "isSloped200": true, "slope200": -0.09, "touch200": false, "touch50": true, "candleConf": true, "signal": "SELL", "grade": "B"},
+    {"symbol": "USDJPY", "psl": 78.9, "pslRank": 25, "buyRankDot": false, "sellRankDot": true, "tideAligned": true, "isSloped200": true, "slope200": -0.19, "touch200": true, "touch50": false, "candleConf": true, "signal": "SELL", "grade": "A"},
+    {"symbol": "USDCHF", "psl": 71.3, "pslRank": 23, "buyRankDot": false, "sellRankDot": true, "tideAligned": true, "isSloped200": true, "slope200": -0.15, "touch200": false, "touch50": true, "candleConf": true, "signal": "SELL", "grade": "B"},
+    {"symbol": "USDCAD", "psl": 62.7, "pslRank": 19, "buyRankDot": false, "sellRankDot": true, "tideAligned": true, "isSloped200": true, "slope200": -0.11, "touch200": true, "touch50": false, "candleConf": true, "signal": "SELL", "grade": "C"},
+    {"symbol": "AUDUSD", "psl": 22.1, "pslRank": 5, "buyRankDot": true, "sellRankDot": false, "tideAligned": false, "isSloped200": true, "slope200": 0.12, "touch200": false, "touch50": true, "candleConf": true, "signal": "BUY", "grade": "B"},
+    {"symbol": "NZDUSD", "psl": 28.6, "pslRank": 7, "buyRankDot": true, "sellRankDot": false, "tideAligned": false, "isSloped200": true, "slope200": 0.16, "touch200": true, "touch50": false, "candleConf": true, "signal": "BUY", "grade": "C"},
+    {"symbol": "EURJPY", "psl": 55.4, "pslRank": 16, "buyRankDot": false, "sellRankDot": false, "tideAligned": false, "isSloped200": false, "slope200": 0.00, "touch200": false, "touch50": false, "candleConf": false, "signal": null, "grade": null},
+    {"symbol": "GBPJPY", "psl": 89.2, "pslRank": 28, "buyRankDot": false, "sellRankDot": true, "tideAligned": true, "isSloped200": true, "slope200": -0.24, "touch200": true, "touch50": false, "candleConf": true, "signal": "SELL", "grade": "A"},
+    {"symbol": "AUDJPY", "psl": 74.8, "pslRank": 24, "buyRankDot": false, "sellRankDot": true, "tideAligned": true, "isSloped200": true, "slope200": -0.17, "touch200": false, "touch50": true, "candleConf": true, "signal": "SELL", "grade": "B"},
+    {"symbol": "EURGBP", "psl": 41.9, "pslRank": 12, "buyRankDot": false, "sellRankDot": false, "tideAligned": false, "isSloped200": true, "slope200": 0.07, "touch200": false, "touch50": false, "candleConf": false, "signal": null, "grade": null},
+    {"symbol": "GBPAUD", "psl": 85.6, "pslRank": 26, "buyRankDot": false, "sellRankDot": true, "tideAligned": true, "isSloped200": true, "slope200": -0.21, "touch200": true, "touch50": false, "candleConf": true, "signal": "SELL", "grade": "A"}
+  ]
 }
