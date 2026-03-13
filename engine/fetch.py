@@ -252,6 +252,14 @@ def _fetch_batch(
         resp.raise_for_status()
         data = resp.json()
 
+        # Top-level error check (e.g. invalid API key, quota exceeded)
+        if isinstance(data, dict) and data.get("status") == "error":
+            logger.error(
+                f"Twelvedata API error: {data.get('message')} "
+                f"(code {data.get('code')})"
+            )
+            return {}
+
     except requests.exceptions.Timeout:
         logger.error(f"Timeout on batch: {symbol_str}")
         return {}
