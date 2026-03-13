@@ -1,0 +1,52 @@
+name: D1 Signal Engine
+
+on:
+  schedule:
+    # Runs at 22:05 UTC weekdays — 5 minutes after D1 candle close
+    - cron: '5 22 * * 1-5'
+
+  workflow_dispatch:   # Allow manual trigger from GitHub UI for testing
+
+jobs:
+  run_d1_engine:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Cache pip dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('requirements.txt') }}
+          restore-keys: ${{ runner.os }}-pip-
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Restore data cache
+        uses: actions/cache@v4
+        with:
+          path: data/
+          key: fx-data-${{ github.run_id }}
+          restore-keys: fx-data-
+
+      - name: Run D1 signal engine
+        env:
+          TWELVEDATA_API_KEY: ${{ secrets.TWELVEDATA_API_KEY }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID:   ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: python run_d1.py
+
+      - name: Save data cache
+        uses: actions/cache@v4
+        with:
+          path: data/
+          key: fx-data-${{ github.run_id }}

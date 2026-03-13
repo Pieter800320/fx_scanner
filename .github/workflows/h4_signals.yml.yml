@@ -1,0 +1,53 @@
+name: H4 Signal Engine
+
+on:
+  schedule:
+    # Runs 5 minutes after each H4 candle close (UTC)
+    # H4 closes: 00:00, 04:00, 08:00, 12:00, 16:00, 20:00
+    - cron: '5 0,4,8,12,16,20 * * 1-5'   # Monday–Friday only
+
+  workflow_dispatch:   # Allow manual trigger from GitHub UI for testing
+
+jobs:
+  run_h4_signals:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Cache pip dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('requirements.txt') }}
+          restore-keys: ${{ runner.os }}-pip-
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Restore data cache (cooldown state + cached OHLCV)
+        uses: actions/cache@v4
+        with:
+          path: data/
+          key: fx-data-${{ github.run_id }}
+          restore-keys: fx-data-
+
+      - name: Run H4 signal engine
+        env:
+          TWELVEDATA_API_KEY: ${{ secrets.TWELVEDATA_API_KEY }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID:   ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: python run_h4.py
+
+      - name: Save data cache (cooldown state + dashboard JSON)
+        uses: actions/cache@v4
+        with:
+          path: data/
+          key: fx-data-${{ github.run_id }}
