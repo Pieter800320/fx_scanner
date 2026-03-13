@@ -100,13 +100,15 @@ def evaluate_signal(
         return _no_signal(pair, reason="outside_session", ind1=ind1, ind2=ind2)
 
     # ── Extract values ────────────────────────────────────────────────────────
-    is_sloped_200  = ind2["is_sloped_200"]
-    slope_200      = ind2["slope_200"]
-    touch_fired    = ind2["touch_200"] or ind2["touch_50"]
-    ema_touched    = "200" if ind2["touch_200"] else ("50" if ind2["touch_50"] else None)
+    is_sloped_200  = ind2["is_trending"]
+    slope_200      = ind2["slope_72"] if ind2["trend"] == "up" else (
+                     -abs(ind2["slope_72"]) if ind2["trend"] == "down" else 0
+                     ) if ind2["slope_72"] is not None else None
+    touch_fired    = ind2["touch_144"] or ind2["touch_72"]
+    ema_touched    = "144" if ind2["touch_144"] else ("72" if ind2["touch_72"] else None)
     candle_conf    = (
-        (ind2["touch_200"] and ind2["candle_conf_200"]) or
-        (ind2["touch_50"]  and ind2["candle_conf_50"])
+        (ind2["touch_144"] and ind2["candle_conf_144"]) or
+        (ind2["touch_72"]  and ind2["candle_conf_72"])
     )
     tide_state     = ind1.get("tide_state", "")
     buy_rank_dot   = ind1.get("buy_rank_dot",  False)
@@ -115,7 +117,7 @@ def evaluate_signal(
     # ── Evaluate BUY conditions ───────────────────────────────────────────────
     buy_conditions = {
         "c1_sloped"     : is_sloped_200,
-        "c2_slope_up"   : slope_200 is not None and slope_200 > 0,
+        "c2_slope_up"   : ind2.get("trend") == "up",
         "c3_touch"      : touch_fired,
         "c4_candle_conf": candle_conf,
         "c5_tide"       : tide_state in BUY_TIDE_STATES,
@@ -126,7 +128,7 @@ def evaluate_signal(
     # ── Evaluate SELL conditions ──────────────────────────────────────────────
     sell_conditions = {
         "c1_sloped"     : is_sloped_200,
-        "c2_slope_down" : slope_200 is not None and slope_200 < 0,
+        "c2_slope_down" : ind2.get("trend") == "down",
         "c3_touch"      : touch_fired,
         "c4_candle_conf": candle_conf,
         "c5_tide"       : tide_state in SELL_TIDE_STATES,
@@ -298,13 +300,13 @@ def build_dashboard_json(
             "sell_rank_dot": ind1.get("sell_rank_dot", False),
             "tide_state"   : ind1.get("tide_state"),
             "tide_aligned" : sig.get("tide_aligned", False),
-            "is_sloped_200": ind2.get("is_sloped_200", False),
-            "slope_200"    : ind2.get("slope_200"),
-            "touch_200"    : ind2.get("touch_200", False),
-            "touch_50"     : ind2.get("touch_50",  False),
+            "is_sloped_200": ind2.get("is_trending", False),
+            "slope_200"    : ind2.get("slope_72"),
+            "touch_200"    : ind2.get("touch_144", False),
+            "touch_50"     : ind2.get("touch_72",  False),
             "candle_conf"  : (
-                (ind2.get("touch_200") and ind2.get("candle_conf_200")) or
-                (ind2.get("touch_50")  and ind2.get("candle_conf_50"))
+                (ind2.get("touch_144") and ind2.get("candle_conf_144")) or
+                (ind2.get("touch_72")  and ind2.get("candle_conf_72"))
             ),
             "bb_state"     : ind2.get("bb_state", "neutral"),
             "signal"       : sig.get("signal"),
