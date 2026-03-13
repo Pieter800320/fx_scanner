@@ -133,7 +133,7 @@
 
         // Initial load
         if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('sw.js');
+            navigator.serviceWorker.register('/dashboard/sw.js');
         }
         loadTF('d1');
         setInterval(() => loadTF(currentTF), 300000); // Refresh every 5 min
