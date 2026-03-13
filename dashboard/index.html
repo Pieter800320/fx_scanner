@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FX Dashboard</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#000000">
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, sans-serif; margin:0; padding:10px; background:#111; color:#fff; }
+        .header { display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px solid #333; }
+        .tf-toggle button { background:#333; color:#fff; border:1px solid #555; padding:8px 12px; margin:0 5px; border-radius:5px; cursor:pointer; }
+        .tf-toggle button.active { background:#0f0; color:#000; }
+        .msl { background:linear-gradient(90deg, #f00 0%, #f00 var(--msl), #0f0 var(--msl), #0f0 100%); height:20px; margin:10px 0; border-radius:10px; }
+        .signals, .pairs { margin:15px 0; }
+        .pair-row { display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid #333; }
+        .rank { width:40px; font-weight:bold; }
+        .signal { font-size:1.2em; font-weight:bold; }
+        .badges { display:flex; gap:5px; }
+        .badge { width:20px; height:20px; border-radius:50%; border:1px solid #555; }
+        .green { background:#0f0; }
+        .red { background:#f00; }
+        .gold { background:#ff0; color:#000; }
+        .grey { background:#666; }
+        .offline { background:#f80; color:#000; padding:10px; text-align:center; border-radius:5px; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>FX Dashboard</h1>
+        <div id="last-update"></div>
+    </div>
+    <div class="tf-toggle">
+        <button id="d1-btn" class="active">D1</button>
+        <button id="h4-btn">H4</button>
+    </div>
+    <div id="msl-section" style="display:none;">
+        <h3>MSL Tide: <span id="tide-state"></span> <span id="msl-slope"></span></h3>
+        <div class="msl" id="msl-bar"></div>
+        <p id="msl-value"></p>
+    </div>
+    <div id="signals-section">
+        <h3>Signals</h3>
+        <div id="signals-list"></div>
+    </div>
+    <div class="pairs">
+        <h3>Pair Strength</h3>
+        <div id="pairs-table"></div>
+    </div>
+    <div id="offline-banner" class="offline" style="display:none;">Market closed — next update soon</div>
+
+    <script>
+        let currentTF = 'd1';
+        const repoUrl = 'https://raw.githubusercontent.com/Pieter800320/fx_scanner/main/data/'; // Update with your repo/branch
+
+        // Fetch JSON with CORS workaround (raw.githubusercontent.com allows it)
+        async function fetchData(tf) {
+            try {
+                const response = await fetch(`${repoUrl}${tf}_dashboard.json`);
+                if (!response.ok) throw new Error('Fetch failed');
+                return await response.json();
+            } catch (e) {
+                console.error('Fetch error:', e);
+                return null;
+            }
+        }
+
+        // Render MSL
+        function renderMSL(msl) {
+            document.getElementById('tide-state').textContent = msl.tide;
+            document.getElementById('msl-slope').textContent = msl.slope > 0 ? '↑' : '↓';
+            document.getElementById('msl-value').textContent = `MSL: ${msl.value.toFixed(1)}`;
+            document.getElementById('msl-bar').style.setProperty('--msl', `${msl.value}%`);
+        }
+
+        // Render signals (Grade A/B/C)
+        function renderSignals(pairs) {
+            const list = document.getElementById('signals-list');
+            list.innerHTML = pairs
+                .filter(p => p.signal && p.grade)
+                .map(p => {
+                    const dir = p.signal === 'BUY' ? '▲' : '▼';
+                    const color = p.signal === 'BUY' ? 'green' : 'red';
+                    return `<div class="pair-row">
+                        <span>${p.symbol} ${dir} ${p.grade}</span>
+                        <span class="badges">
+                            <div class="badge ${p.buyRankDot || p.tideAligned ? 'green' : 'grey'}"></div>
+                            <div class="badge ${p.touch200 || p.touch50 ? (p.candleConf ? color : 'gold') : 'grey'}"></div>
+                        </span>
+                    </div>`;
+                }).join('') || '<p>No active signals</p>';
+        }
+
+        // Render pairs table
+        function renderPairs(pairs) {
+            const table = document.getElementById('pairs-table');
+            table.innerHTML = pairs.map(p => {
+                const rankColor = p.pslRank <= 3 ? 'green' : p.pslRank >= 26 ? 'red' : 'grey';
+                return `<div class="pair-row">
+                    <span class="rank" style="color:${rankColor === 'green' ? '#0f0' : rankColor === 'red' ? '#f00' : '#ccc'}">${p.pslRank}</span>
+                    <span>${p.symbol}</span>
+                    <span>${p.psl.toFixed(1)}</span>
+                    <span>${p.tideAligned ? '✅' : ''}</span>
+                </div>`;
+            }).join('');
+        }
+
+        // Load data
+        async function loadTF(tf) {
+            const data = await fetchData(tf);
+            if (data) {
+                document.getElementById('last-update').textContent = `Last: ${new Date(data.updated).toLocaleString('en-US', {timeZone: 'UTC'})} UTC`;
+                renderMSL(data.msl);
+                renderSignals(data.pairs);
+                renderPairs(data.pairs);
+                document.getElementById('msl-section').style.display = 'block';
+                document.getElementById('offline-banner').style.display = 'none';
+            } else {
+                document.getElementById('offline-banner').style.display = 'block';
+            }
+        }
+
+        // TF toggle
+        document.getElementById('d1-btn').onclick = () => toggleTF('d1');
+        document.getElementById('h4-btn').onclick = () => toggleTF('h4');
+        function toggleTF(tf) {
+            if (tf === currentTF) return;
+            currentTF = tf;
+            document.querySelectorAll('.tf-toggle button').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(tf + '-btn').classList.add('active');
+            loadTF(tf);
+        }
+
+        // Initial load
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js');
+        }
+        loadTF('d1');
+        setInterval(() => loadTF(currentTF), 300000); // Refresh every 5 min
+    </script>
+</body>
+</html>
