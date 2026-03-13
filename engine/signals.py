@@ -193,7 +193,7 @@ def evaluate_signal(
         "psl_norm"      : ind1.get("psl_norm"),
         "msl_norm"      : ind1.get("msl_norm"),
         "rank"          : ind1.get("rank"),
-        "slope_200"     : ind2.get("slope_200"),
+        "slope_72"      : ind2.get("slope_72"),
         "bb_state"      : ind2.get("bb_state"),
         "conditions"    : conditions,
     }
@@ -217,7 +217,7 @@ def _no_signal(pair: str, reason: str = "", ind1: dict = None, ind2: dict = None
         "psl_norm"      : ind1.get("psl_norm"),
         "msl_norm"      : ind1.get("msl_norm"),
         "rank"          : ind1.get("rank"),
-        "slope_200"     : ind2.get("slope_200"),
+        "slope_72"      : ind2.get("slope_72"),
         "bb_state"      : ind2.get("bb_state"),
         "reason"        : reason,
         "conditions"    : {},
