@@ -142,12 +142,13 @@ IND1_PARAMS = {
 
 IND2_PARAMS = {
     "atr_len"       : 14,
-    "ema_fast"      : 50,
-    "ema_slow"      : 200,
+    "ema_fast"      : 72,    # EMA 72 — fast line
+    "sma_slow"      : 144,   # SMA 144 — slow line / zero line
+    "shift_bars"    : 12,    # trend filter: SMA144 > SMA144[12]
     "touch_zone"    : 0.5,
     "cooldown"      : 8,
-    "slope_len"     : 5,
-    "slope_thresh"  : 0.1,
+    "slope_len"     : 5,     # fast EMA slope only
+    "slope_thresh"  : 0.1,   # fast EMA slope threshold only
     "bb_len"        : 20,
     "bb_mult"       : 2.0,
     "bb_norm_len"   : 100,
@@ -156,7 +157,7 @@ IND2_PARAMS = {
 # ── TWELVEDATA API SETTINGS ───────────────────────────────────────────────────
 
 TWELVEDATA_BASE_URL = "https://api.twelvedata.com/time_series"
-FETCH_OUTPUTSIZE    = 150   # norm_len=100 + indicator warmup buffer
+FETCH_OUTPUTSIZE    = 300   # 200 EMA warmup + 100 BB norm lookback + buffer
 INTERVALS           = {
     "D1": "1day",
     "H4": "4h",
