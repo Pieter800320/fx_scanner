@@ -97,10 +97,10 @@ def _direction_emoji(direction: str) -> str:
 
 
 def _ema_label(ema_touched: str) -> str:
-    if ema_touched == "200":
-        return "200 EMA touch"
-    if ema_touched == "50":
-        return "50 EMA touch"
+    if ema_touched == "144":
+        return "144 SMA touch"
+    if ema_touched == "72":
+        return "72 EMA touch"
     return "EMA touch"
 
 
@@ -131,7 +131,7 @@ def format_signal_alert(signal: dict, interval: str = "H4") -> str:
     psl       = signal.get("psl_norm")
     msl       = signal.get("msl_norm")
     rank      = signal.get("rank")
-    slope     = signal.get("slope_200")
+    slope     = signal.get("slope_72")
 
     header_emoji = "⚡" if interval == "H4" else "📊"
 
