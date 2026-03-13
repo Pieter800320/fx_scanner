@@ -44,16 +44,16 @@ def evaluate_signal(
     Assigns grade based on how many conditions are met.
 
     BUY conditions:
-      1. is_sloped_200 = True         (200 EMA trending)
-      2. slope_200 > 0                (200 EMA sloping upward)
-      3. touch fired this bar         (200 or 50 EMA touch)
+      1. is_trending = True           (SMA 144 trending up or down)
+      2. trend == "up"                (SMA144 > SMA144[12])
+      3. touch fired this bar         (144 SMA or 72 EMA touch)
       4. candle_conf = True           (wick rejection confirmed)
       5. tide aligned for buy         (shortFuel or shortFade)
       6. buy_rank_dot = True          (pair in bottom N of 28)
 
     SELL conditions:
-      1. is_sloped_200 = True
-      2. slope_200 < 0                (200 EMA sloping downward)
+      1. is_trending = True
+      2. trend == "down"              (SMA144 < SMA144[12])
       3. touch fired this bar
       4. candle_conf = True
       5. tide aligned for sell        (longFuel or longFade)
@@ -92,7 +92,7 @@ def evaluate_signal(
         return _no_signal(pair, reason="ranging", ind1=ind1, ind2=ind2)
 
     # ── Guard: missing data ───────────────────────────────────────────────────
-    if ind1.get("psl_norm") is None or ind2.get("slope_200") is None:
+    if ind1.get("psl_norm") is None or ind2.get("slope_72") is None:
         return _no_signal(pair, reason="missing_data", ind1=ind1, ind2=ind2)
 
     # ── Guard: session filter ─────────────────────────────────────────────────
@@ -300,10 +300,11 @@ def build_dashboard_json(
             "sell_rank_dot": ind1.get("sell_rank_dot", False),
             "tide_state"   : ind1.get("tide_state"),
             "tide_aligned" : sig.get("tide_aligned", False),
-            "is_sloped_200": ind2.get("is_trending", False),
-            "slope_200"    : ind2.get("slope_72"),
-            "touch_200"    : ind2.get("touch_144", False),
-            "touch_50"     : ind2.get("touch_72",  False),
+            "is_trending"  : ind2.get("is_trending", False),
+            "trend"        : ind2.get("trend"),
+            "slope_72"     : ind2.get("slope_72"),
+            "touch_144"    : ind2.get("touch_144", False),
+            "touch_72"     : ind2.get("touch_72",  False),
             "candle_conf"  : (
                 (ind2.get("touch_144") and ind2.get("candle_conf_144")) or
                 (ind2.get("touch_72")  and ind2.get("candle_conf_72"))
