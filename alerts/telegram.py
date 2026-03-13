@@ -246,7 +246,7 @@ if __name__ == "__main__":
         "psl_norm"     : 6.2,
         "msl_norm"     : 38.1,
         "rank"         : 2,
-        "slope_200"    : 0.142,
+        "slope_72"     : 0.142,
         "conditions"   : {
             "c1_sloped"     : True,
             "c2_slope_up"   : True,
