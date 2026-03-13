@@ -21,6 +21,16 @@ from config.pairs import (
 
 logger = logging.getLogger(__name__)
 
+# ── SYMBOL FORMAT CONVERSION ──────────────────────────────────────────────────
+
+def _to_td_symbol(pair: str) -> str:
+    """Convert EURUSD to EUR/USD for Twelvedata API."""
+    return f"{pair[:3]}/{pair[3:]}"
+
+def _from_td_symbol(symbol: str) -> str:
+    """Convert EUR/USD back to EURUSD."""
+    return symbol.replace("/", "")
+
 # ── CACHE SETTINGS ────────────────────────────────────────────────────────────
 
 CACHE_DIR         = Path("data/cache")
@@ -234,7 +244,7 @@ def _fetch_batch(
     Twelvedata returns a dict keyed by symbol when multiple symbols requested,
     or a flat response when only one symbol is requested.
     """
-    symbol_str = ",".join(pairs)
+    symbol_str = ",".join(_to_td_symbol(p) for p in pairs)
     logger.debug(f"Batch fetch: {symbol_str} ({td_interval})")
 
     try:
@@ -272,11 +282,11 @@ def _fetch_batch(
 
     # Twelvedata returns a flat dict when only 1 symbol requested
     if len(pairs) == 1:
-        data = {pairs[0]: data}
+        data = {_to_td_symbol(pairs[0]): data}
 
     result = {}
     for pair in pairs:
-        pair_data = data.get(pair, {})
+        pair_data = data.get(_to_td_symbol(pair), {})
 
         if pair_data.get("status") == "error":
             logger.error(f"Twelvedata error for {pair}: {pair_data.get('message')}")
