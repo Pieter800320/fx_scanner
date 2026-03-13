@@ -1,0 +1,20 @@
+{
+  "updated": "2026-03-13T08:05:00Z",
+  "timeframe": "D1",
+  "msl": { "value": 52.3, "tide": "longFuel", "slope": 2.1 },
+  "pairs": [{
+    "symbol": "EURUSD", 
+    "psl": 18.4, 
+    "pslRank": 4, 
+    "buyRankDot": false, 
+    "sellRankDot": true,
+    "tideAligned": true, 
+    "isSloped200": true, 
+    "slope200": -0.14, 
+    "touch200": true,
+    "touch50": false, 
+    "candleConf": true, 
+    "signal": "SELL", 
+    "grade": "A"
+  }]
+}
